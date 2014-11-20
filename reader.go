@@ -1,6 +1,7 @@
 package file
 
 import (
+	"bufio"
 	"io/ioutil"
 	"strconv"
 	"strings"
@@ -51,4 +52,15 @@ func ToInt64(filePath string) (int64, error) {
 		return 0, err
 	}
 	return ret, nil
+}
+
+func ReadLine(r *bufio.Reader) ([]byte, error) {
+	line, isPrefix, err := r.ReadLine()
+	for isPrefix && err == nil {
+		var bs []byte
+		bs, isPrefix, err = r.ReadLine()
+		line = append(line, bs...)
+	}
+
+	return line, err
 }
