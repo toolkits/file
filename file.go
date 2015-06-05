@@ -6,6 +6,8 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strconv"
+	"time"
 )
 
 // SelfPath gets compiled executable file absolute path
@@ -45,8 +47,46 @@ func InsureDir(fp string) error {
 	return os.MkdirAll(fp, os.ModePerm)
 }
 
+// mkdir dir if not exist
 func EnsureDir(fp string) error {
 	return os.MkdirAll(fp, os.ModePerm)
+}
+
+// ensure the datadir and make sure it's rw-able
+func EnsureDirRW(dataDir string) error {
+	err := EnsureDir(dataDir)
+	if err != nil {
+		return err
+	}
+
+	ts := time.Now().Unix()
+	checkFile := dataDir + "/rw." + strconv.FormatInt(ts, 10)
+	fd, err := Create(checkFile)
+	if err != nil {
+		if os.IsPermission(err) {
+			return fmt.Errorf("open %s: rw permission denied", dataDir)
+		}
+		return err
+	}
+	Close(fd)
+	Remove(checkFile)
+
+	return nil
+}
+
+// create one file
+func Create(name string) (*os.File, error) {
+	return os.Create(name)
+}
+
+// remove one file
+func Remove(name string) error {
+	return os.Remove(name)
+}
+
+// close fd
+func Close(fd *os.File) error {
+	return fd.Close()
 }
 
 func Ext(fp string) string {
