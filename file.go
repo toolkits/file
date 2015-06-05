@@ -45,6 +45,10 @@ func InsureDir(fp string) error {
 	return os.MkdirAll(fp, os.ModePerm)
 }
 
+func EnsureDir(fp string) error {
+	return os.MkdirAll(fp, os.ModePerm)
+}
+
 func Ext(fp string) string {
 	return path.Ext(fp)
 }
