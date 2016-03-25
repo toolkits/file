@@ -3,10 +3,11 @@ package file
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"path"
 	"path/filepath"
-	"strconv"
+	"strings"
 	"time"
 )
 
@@ -59,8 +60,7 @@ func EnsureDirRW(dataDir string) error {
 		return err
 	}
 
-	ts := time.Now().Unix()
-	checkFile := dataDir + "/rw." + strconv.FormatInt(ts, 10)
+	checkFile := fmt.Sprintf("%s/rw.%d", dataDir, time.Now().UnixNano())
 	fd, err := Create(checkFile)
 	if err != nil {
 		if os.IsPermission(err) {
@@ -205,4 +205,21 @@ func FilesUnder(dirPath string) ([]string, error) {
 
 	return ret, nil
 
+}
+
+func MustOpenLogFile(fp string) *os.File {
+	if strings.Contains(fp, "/") {
+		dir := Dir(fp)
+		err := EnsureDir(dir)
+		if err != nil {
+			log.Fatalf("mkdir -p %s occur error %v", dir, err)
+		}
+	}
+
+	f, err := os.OpenFile(fp, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatalf("open %s occur error %v", fp, err)
+	}
+
+	return f
 }
