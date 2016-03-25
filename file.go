@@ -177,7 +177,6 @@ func DirsUnder(dirPath string) ([]string, error) {
 	}
 
 	return ret, nil
-
 }
 
 // list files under dirPath
@@ -204,7 +203,6 @@ func FilesUnder(dirPath string) ([]string, error) {
 	}
 
 	return ret, nil
-
 }
 
 func MustOpenLogFile(fp string) *os.File {
